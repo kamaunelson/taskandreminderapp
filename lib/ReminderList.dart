@@ -298,28 +298,31 @@ class _ReminderListState extends State<ReminderList> {
               child: Text('No reminders yet.'),
             )
           : ListView.builder(
-              itemCount: reminders.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(reminders[index].name),
-                  subtitle: Text(
-                    'Time: ${reminders[index].dateTime.hour}:${reminders[index].dateTime.minute} - ${reminders[index].category}',
-                  ),
-                  trailing: Checkbox(
-                    value: reminders[index].isSelected,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        reminders[index].isSelected = value!;
-                      });
-                    },
-                  ),
-                  onTap: () {
-                    // Perform update on tap
-                    _showUpdateReminderDialog(reminders[index]);
-                  },
-                );
-              },
-            ),
+  itemCount: reminders.length,
+  itemBuilder: (context, index) {
+    String formattedDate = '${reminders[index].dateTime.year}-${reminders[index].dateTime.month.toString().padLeft(2, '0')}-${reminders[index].dateTime.day.toString().padLeft(2, '0')}';
+    String formattedTime = '${reminders[index].dateTime.hour}:${reminders[index].dateTime.minute.toString().padLeft(2, '0')}';
+    
+    return ListTile(
+      title: Text(reminders[index].name),
+      subtitle: Text(
+        'Date: $formattedDate | Time: $formattedTime | Category: ${reminders[index].category}',
+      ),
+      trailing: Checkbox(
+        value: reminders[index].isSelected,
+        onChanged: (bool? value) {
+          setState(() {
+            reminders[index].isSelected = value!;
+          });
+        },
+      ),
+      onTap: () {
+        _showUpdateReminderDialog(reminders[index]);
+      },
+    );
+  },
+),
+
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
