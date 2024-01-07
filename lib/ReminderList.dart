@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
 
-class ReminderList extends StatefulWidget {
-  const ReminderList({Key? key}) : super(key: key);
-
-  @override
-  _ReminderListState createState() => _ReminderListState();
-}
-
 class Reminder {
   String name;
   DateTime dateTime;
