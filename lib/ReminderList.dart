@@ -27,119 +27,121 @@ class _ReminderListState extends State<ReminderList> {
   List<Reminder> reminders = [];
 
   void _showAddReminderDialog() async {
-    String reminderName = '';
-    DateTime? selectedDate;
-    TimeOfDay? selectedTime;
-    String selectedCategory = 'Low'; // Default category
+  String reminderName = '';
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+  String selectedCategory = 'Low'; // Default category
 
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Reminder'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  decoration: const InputDecoration(labelText: 'Reminder Name'),
-                  onChanged: (value) {
-                    reminderName = value;
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () async {
-                        final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2101),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Add Reminder'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    decoration: const InputDecoration(labelText: 'Reminder Name'),
+                    onChanged: (value) {
+                      reminderName = value;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
                             selectedDate = pickedDate;
-                          });
-                        }
-                      },
-                      child: const Text('Select Date'),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(selectedDate != null
-                        ? 'Date: ${selectedDate!.toLocal().toString().split(' ')[0]}'
-                        : 'No Date Chosen'),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () async {
-                        final TimeOfDay? pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: const TimeOfDay(hour: 00, minute: 00),
-                        );
-                        if (pickedTime != null) {
-                          setState(() {
-                            selectedTime = pickedTime;
-                          });
-                        }
-                      },
-                      child: const Text('Select Time'),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(selectedTime != null
-                        ? 'Time: ${selectedTime!.format(context)}'
-                        : 'No Time Chosen'),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                DropdownButton<String>(
-                  value: selectedCategory,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedCategory = value!;
-                    });
-                  },
-                  items: <String>['Low', 'Medium', 'High'].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                if (reminderName.isNotEmpty && selectedDate != null && selectedTime != null) {
-                  setState(() {
-                    reminders.add(Reminder(
-                      name: reminderName,
-                      dateTime: DateTime(
-                        selectedDate!.year,
-                        selectedDate!.month,
-                        selectedDate!.day,
-                        selectedTime!.hour,
-                        selectedTime!.minute,
+                            setState(() {}); // Trigger rebuild after date selection
+                          }
+                        },
+                        child: const Text('Select Date'),
                       ),
-                      category: selectedCategory,
-                    ));
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Add'),
+                      const SizedBox(width: 10),
+                      Text(selectedDate != null
+                          ? 'Date: ${selectedDate!.toLocal().toString().split(' ')[0]}'
+                          : 'No Date Chosen'),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () async {
+                          final TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: const TimeOfDay(hour: 00, minute: 00),
+                          );
+                          if (pickedTime != null) {
+                            selectedTime = pickedTime;
+                            setState(() {}); // Trigger rebuild after time selection
+                          }
+                        },
+                        child: const Text('Select Time'),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(selectedTime != null
+                          ? 'Time: ${selectedTime!.format(context)}'
+                          : 'No Time Chosen'),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButton<String>(
+                    value: selectedCategory,
+                    onChanged: (String? value) {
+                      selectedCategory = value ?? 'Low';
+                      setState(() {}); // Trigger rebuild after category selection
+                    },
+                    items: <String>['Low', 'Medium', 'High'].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
-          ],
-        );
-      },
-    );
-  }
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  if (reminderName.isNotEmpty && selectedDate != null && selectedTime != null) {
+                    setState(() {
+                      reminders.add(Reminder(
+                        name: reminderName,
+                        dateTime: DateTime(
+                          selectedDate!.year,
+                          selectedDate!.month,
+                          selectedDate!.day,
+                          selectedTime!.hour,
+                          selectedTime!.minute,
+                        ),
+                        category: selectedCategory,
+                      ));
+                    });
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
 
   void _showDeleteConfirmationDialog() {
     showDialog(
@@ -177,65 +179,65 @@ class _ReminderListState extends State<ReminderList> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reminder List'),
-      ),
-      body: reminders.isEmpty
-          ? const Center(
-              child: Text('No reminders yet.'),
-            )
-          : ListView.builder(
-              itemCount: reminders.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(reminders[index].name),
-                  subtitle: Text(
-                    'Time: ${reminders[index].dateTime.hour}:${reminders[index].dateTime.minute} - ${reminders[index].category}',
-                  ),
-                  trailing: Checkbox(
-                    value: reminders[index].isSelected,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        reminders[index].isSelected = value!;
-                      });
-                    },
-                  ),
-                  onTap: () {
-                    // Perform update on tap
-                    _showUpdateReminderDialog(reminders[index]);
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Reminder List'),
+    ),
+    body: reminders.isEmpty
+        ? const Center(
+            child: Text('No reminders yet.'),
+          )
+        : ListView.builder(
+            itemCount: reminders.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(reminders[index].name),
+                subtitle: Text(
+                  'Date: ${reminders[index].dateTime.toString()} - Category: ${reminders[index].category}',
+                ),
+                trailing: Checkbox(
+                  value: reminders[index].isSelected,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      reminders[index].isSelected = value ?? false;
+                    });
                   },
-                );
-              },
-            ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                _showAddReminderDialog();
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                _showDeleteConfirmationDialog();
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                // Implement edit functionality
-                // Call _showUpdateReminderDialog for selected reminders
-                // Use reminders.where((reminder) => reminder.isSelected).toList() to get selected reminders
-              },
-            ),
-          ],
-        ),
+                ),
+                onTap: () {
+                  // Implement update functionality
+                  _showUpdateReminderDialog(reminders[index]);
+                },
+              );
+            },
+          ),
+    bottomNavigationBar: BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              _showAddReminderDialog();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteConfirmationDialog();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              // Implement edit functionality
+              // Call _showUpdateReminderDialog for selected reminders
+              // Use reminders.where((reminder) => reminder.isSelected).toList() to get selected reminders
+            },
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
