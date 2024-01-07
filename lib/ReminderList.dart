@@ -15,7 +15,7 @@ class Reminder {
 }
 
 class ReminderList extends StatefulWidget {
-  const ReminderList({Key? key}) : super(key: key);
+  const ReminderList({super.key});
 
   @override
   _ReminderListState createState() => _ReminderListState();

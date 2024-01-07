@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 class TaskList extends StatefulWidget {
-  const TaskList({Key? key}) : super(key: key);
+  const TaskList({super.key});
 
   @override
   _TaskListState createState() => _TaskListState();
@@ -237,7 +237,7 @@ class TaskListItem extends StatelessWidget {
   final VoidCallback onDeletePressed;
   final VoidCallback onUpdatePressed;
 
-  TaskListItem({super.key, 
+  const TaskListItem({super.key, 
     required this.task,
     required this.onCheckboxChanged,
     required this.onDeletePressed,
