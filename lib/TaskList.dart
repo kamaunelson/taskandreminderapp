@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, file_names
+
 import 'package:flutter/material.dart';
 
 class TaskList extends StatefulWidget {
@@ -152,7 +154,7 @@ class _TaskListState extends State<TaskList> {
         ),
       ),
       body: itemCount == 0
-          ? Center(
+          ? const Center(
               child: Text('No tasks yet.'),
             )
           : ListView.builder(
@@ -186,21 +188,21 @@ class _TaskListState extends State<TaskList> {
             IconButton(
               icon: const Icon(Icons.update),
               onPressed: () {
-                tasks.forEach((task) {
+                for (var task in tasks) {
                   if (task.isCompleted) {
                     _showUpdateTaskDialog(task);
                   }
-                });
+                }
               },
             ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                tasks.forEach((task) {
+                for (var task in tasks) {
                   if (task.isCompleted) {
                     _showDeleteConfirmationDialog(task);
                   }
-                });
+                }
               },
             ),
           ],
@@ -235,7 +237,7 @@ class TaskListItem extends StatelessWidget {
   final VoidCallback onDeletePressed;
   final VoidCallback onUpdatePressed;
 
-  TaskListItem({
+  TaskListItem({super.key, 
     required this.task,
     required this.onCheckboxChanged,
     required this.onDeletePressed,
