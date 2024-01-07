@@ -172,11 +172,64 @@ class _ReminderListState extends State<ReminderList> {
     );
   }
 
-  void _showUpdateReminderDialog(Reminder reminder) {
-    // Similar to _showAddReminderDialog, with pre-filled fields for the selected reminder
-    // Implement code here for updating reminders
-    // You can use similar logic for updating reminders as used in the _showAddReminderDialog
-  }
+  void _showUpdateReminderDialog(Reminder reminder) async {
+  String reminderName = reminder.name;
+  DateTime selectedDate = reminder.dateTime;
+  TimeOfDay selectedTime = TimeOfDay.fromDateTime(reminder.dateTime);
+  String selectedCategory = reminder.category;
+
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Update Reminder'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    decoration: const InputDecoration(labelText: 'Reminder Name'),
+                    onChanged: (value) {
+                      setState(() {
+                        reminderName = value;
+                      });
+                    },
+                    controller: TextEditingController(text: reminderName),
+                  ),
+                  const SizedBox(height: 10),
+                  // ... (similar code for selecting date, time, and category)
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  if (reminderName.isNotEmpty) {
+                    setState(() {
+                      reminder.name = reminderName;
+                      reminder.dateTime = DateTime(
+                        selectedDate.year,
+                        selectedDate.month,
+                        selectedDate.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      );
+                      reminder.category = selectedCategory;
+                    });
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Update'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   @override
 Widget build(BuildContext context) {
