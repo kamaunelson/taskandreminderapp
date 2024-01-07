@@ -251,9 +251,9 @@ class TaskListItem extends StatelessWidget {
         value: task.isCompleted,
         onChanged: onCheckboxChanged,
       ),
-      onTap: () {
-        onUpdatePressed();
-      },
+      // onTap: () {
+      //   onUpdatePressed();
+      // },
       onLongPress: () {
         onDeletePressed();
       },
