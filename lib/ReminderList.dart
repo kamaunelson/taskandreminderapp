@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Reminder {
   String name;
@@ -24,7 +25,7 @@ class ReminderList extends StatefulWidget {
 class _ReminderListState extends State<ReminderList> {
   List<Reminder> reminders = [];
 
-  void _showAddReminderDialog() async {
+  Future<void> _showAddReminderDialog() async {
   String reminderName = '';
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -113,31 +114,66 @@ class _ReminderListState extends State<ReminderList> {
         ),
         actions: <Widget>[
           ElevatedButton(
-            onPressed: () {
-              if (reminderName.isNotEmpty && selectedDate != null && selectedTime != null) {
-                setState(() {
-                  reminders.add(Reminder(
-                    name: reminderName,
-                    dateTime: DateTime(
-                      selectedDate!.year,
-                      selectedDate!.month,
-                      selectedDate!.day,
-                      selectedTime!.hour,
-                      selectedTime!.minute,
-                    ),
-                    category: selectedCategory,
-                  ));
-                });
-                Navigator.of(context).pop();
-              }
-            },
-            child: const Text('Add'),
-          ),
+      onPressed: () {
+        if (reminderName.isNotEmpty && selectedDate != null && selectedTime != null) {
+          setState(() {
+            // Add the reminder
+            Reminder newReminder = Reminder(
+              name: reminderName,
+              dateTime: DateTime(
+                selectedDate!.year,
+                selectedDate!.month,
+                selectedDate!.day,
+                selectedTime!.hour,
+                selectedTime!.minute,
+              ),
+              category: selectedCategory,
+            );
+
+            reminders.add(newReminder);
+            
+            // Schedule the notification
+            scheduleNotification(newReminder);
+          });
+          Navigator.of(context).pop();
+        }
+      },
+      child: const Text('Add'),
+      ),
         ],
       );
     },
   );
 }
+
+  // Function to schedule a notification
+  Future<void> scheduleNotification(Reminder reminder) async {
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+      'Reminder_Task_App', // Change this to a unique ID for your app
+      'Task Reminder App', // Change this to a channel name for your app
+      //'Client gets to receive a notification reminder', // Change this to a channel description for your app
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
+
+    var platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    // ignore: prefer_typing_uninitialized_variables
+    var flutterLocalNotificationsPlugin;
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      reminder.hashCode, // Unique ID for the notification
+      'Reminder: ${reminder.name}', // Notification title
+      'Time to ${reminder.name}!', // Notification body
+      reminder.dateTime, // Date and time to show the notification
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
 
 
   void _showUpdateReminderDialog(Reminder reminder) async {

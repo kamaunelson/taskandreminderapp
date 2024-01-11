@@ -1,6 +1,6 @@
 # taskandreminderapp
 
-A new Flutter project.
+A basic application to guide user on tasks, reminders, weather forecast api integration and motivational quotes.
 
 ## Getting Started
 
